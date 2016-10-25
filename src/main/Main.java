@@ -65,6 +65,7 @@ public class Main extends Application {
     	//Get the database using singleton.
     	MongoDatabase mongo = MongoDatabase.getInstance(); 
     	//Insert two games in the game collection.
+
     	mongo.insertNewGameDocument(mongo.createGameDocument(1, "Game", "Awesome game", 12.22F, 18, "PC", "Shooter", new Date()));
     	mongo.insertNewGameDocument(mongo.createGameDocument(2, "Great Game", "Great game, play this 24/7", 20.00F, 7, "PS3", "Shooter", new Date()));
     	
