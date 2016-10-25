@@ -70,11 +70,13 @@ public class Main extends Application {
     	mongo.insertNewGameDocument(mongo.createGameDocument(2, "Great Game", "Great game, play this 24/7", 20.00F, 7, "PS3", "Shooter", new Date()));
     	
     	//Insert a new user in the user collection.
-    	mongo.insertUser("SuperUser12", "pass123", 18, "SuperUser12@gmail.com", false, mongo.createAddressDocument("Netherlands", "Rotterdam", "Wijnhaven", 107, "1264 ZF"), Arrays.asList(1), Arrays.asList());
+    	mongo.insertUser("SuperUser12", "pass123", 18, "SuperUser12@gmail.com", false, mongo.createAddressDocument("Netherlands", "Rotterdam", "Wijnhaven", 107, "1264 ZF"), Arrays.asList(1), Arrays.asList(), Arrays.asList(), Arrays.asList());
     	
     	//Add a history document to the user
     	mongo.addHistoryDocument("SuperUser12", mongo.createHistoryDocument(1, new Date()));
     	mongo.addHistoryDocument("SuperUser12", mongo.createHistoryDocument(2, new Date()));
+    	mongo.addToFavouriteList("SuperUser12", 2);
+    	mongo.addToWishList("SuperUser12", 1);
     	
 //    	mongo.dropCollection(mongo.getGameCollection());
 //    	mongo.dropCollection(mongo.getUserCollection());

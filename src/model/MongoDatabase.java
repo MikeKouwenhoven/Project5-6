@@ -2,6 +2,7 @@ package model;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -31,7 +32,7 @@ public class MongoDatabase {
 		this.userCollection = db.getCollection("users");
 	}
 	
-	public void insertUser(String username, String password, int age, String email, boolean admin, BasicDBObject address, List<Integer> gameIdList, List<DBObject> historyItems) {
+	public void insertUser(String username, String password, int age, String email, boolean admin, BasicDBObject address, List<Integer> gameIdList, List<DBObject> historyItems, List<Integer> favouriteList, List<Integer> wishList) {
 		if (databaseHasUser(username))
 			return;
 		BasicDBObject userDocument = new BasicDBObject();
@@ -43,6 +44,8 @@ public class MongoDatabase {
 		userDocument.put("address", address);
 		userDocument.put("cart_items", gameIdList);
 		userDocument.put("purchase_history", historyItems);
+		userDocument.put("favourite_list", favouriteList);
+		userDocument.put("wish_list", wishList);
 		userCollection.insert(userDocument);
 	}
 	
@@ -51,9 +54,45 @@ public class MongoDatabase {
 		if (!databaseHasUser(username))
 			return;
 		BasicDBObject userDocument = (BasicDBObject) getUserDocument(username);
-		List<DBObject> historyItems = (List<DBObject>) userDocument.get("purchase_history");
+		List<DBObject> historyItems = userDocument.get("purchase_history") == null ? new ArrayList<>() : (List<DBObject>) userDocument.get("purchase_history");
 		historyItems.add(historyDocument);
 		userDocument.replace("purchase_history", historyItems);
+		userCollection.update(getUserDocument(username), userDocument);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void addToFavouriteList(String username, int gameId) {
+		if (!databaseHasUser(username))
+			return;
+		if (!userHasGame(username, gameId))
+			return;
+		BasicDBObject userDocument = (BasicDBObject) getUserDocument(username);
+		List<Integer> favouriteList = userDocument.get("favourite_list") == null ? new ArrayList<>() : (List<Integer>) userDocument.get("favourite_list");
+		favouriteList.add(gameId);
+		userDocument.replace("favourite_list", favouriteList);
+		userCollection.update(getUserDocument(username), userDocument);
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean userHasGame(String username, int gameId) {
+		if (!databaseHasUser(username))
+			return false;
+		BasicDBObject userDocument = (BasicDBObject) getUserDocument(username);
+		List<DBObject> historyItems = userDocument.get("purchase_history") == null ? new ArrayList<>() : (List<DBObject>) userDocument.get("purchase_history");
+		for (DBObject item : historyItems)
+			if ((int) item.get("id") == gameId)
+				return true;
+		return false;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public void addToWishList(String username, int gameId) {
+		if (!databaseHasUser(username))
+			return;
+		BasicDBObject userDocument = (BasicDBObject) getUserDocument(username);
+		List<Integer> wishList = userDocument.get("wish_list") == null ? new ArrayList<>() : (List<Integer>) userDocument.get("wish_list");
+		wishList.add(gameId);
+		userDocument.replace("wish_list", wishList);
 		userCollection.update(getUserDocument(username), userDocument);
 	}
 	
