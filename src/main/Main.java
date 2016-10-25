@@ -1,11 +1,14 @@
 package main;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Date;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import model.MongoDatabase;
 
 
 /**
@@ -15,7 +18,7 @@ import javafx.stage.Stage;
 
 //Main class which extends from Application Class
 public class Main extends Application {
-
+	
     //This is our PrimaryStage (It contains everything)
     private Stage primaryStage;
 
@@ -26,7 +29,7 @@ public class Main extends Application {
     public void start(Stage primaryStage) {
         //1) Declare a primary stage (Everything will be on this stage)
         this.primaryStage = primaryStage;
-
+        
         //Optional: Set a title for primary stage
         this.primaryStage.setTitle("Webshop");
 
@@ -57,6 +60,22 @@ public class Main extends Application {
 
 
     public static void main(String[] args) {
-        launch(args);
+//      launch(args);
+    	
+    	//Get the database using singleton.
+    	MongoDatabase mongo = MongoDatabase.getInstance(); 
+    	//Insert two games in the game collection.
+    	mongo.insertNewGameDocument(mongo.createGameDocument(1, "Game", "Awesome game", 12.22F, 18, "PC", "Shooter"));
+    	mongo.insertNewGameDocument(mongo.createGameDocument(2, "Great Game", "Great game, play this 24/7", 20.00F, 7, "PS3", "Shooter"));
+    	
+    	//Insert a new user in the user collection.
+    	mongo.insertUser("SuperUser12", "pass123", 18, "SuperUser12@gmail.com", false, mongo.createAddressDocument("Netherlands", "Rotterdam", "Wijnhaven", 107, "1264 ZF"), Arrays.asList(1), Arrays.asList());
+    	
+    	//Add a history document to the user
+    	mongo.addHistoryDocument("SuperUser12", mongo.createHistoryDocument(1, new Date()));
+    	mongo.addHistoryDocument("SuperUser12", mongo.createHistoryDocument(2, new Date()));
+    	
+//    	mongo.dropCollection(mongo.getGameCollection());
+//    	mongo.dropCollection(mongo.getUserCollection());
     }
 }
